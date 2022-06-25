@@ -5,8 +5,11 @@
 package it.polito.tdp.imdb;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.imdb.model.Adiacenza;
+import it.polito.tdp.imdb.model.Director;
 import it.polito.tdp.imdb.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,10 +38,10 @@ public class FXMLController {
     private Button btnCercaAffini; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxAnno"
-    private ComboBox<?> boxAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxRegista"
-    private ComboBox<?> boxRegista; // Value injected by FXMLLoader
+    private ComboBox<Director> boxRegista; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtAttoriCondivisi"
     private TextField txtAttoriCondivisi; // Value injected by FXMLLoader
@@ -48,11 +51,31 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	if(boxAnno.getValue()!=null)
+    	{
+    		txtResult.appendText(model.creaGrafo(boxAnno.getValue()));
+    		this.boxRegista.getItems().addAll(model.getVertici());
+    		this.btnAdiacenti.setDisable(false);
+    	}
 
     }
 
     @FXML
     void doRegistiAdiacenti(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	if(this.boxRegista.getValue()!=null)
+    	{
+    		txtResult.appendText("REGISTI ADIACENTI A: " + this.boxRegista.getValue());
+    		List<Adiacenza> adiacenti = model.getAdiacenti(this.boxRegista.getValue());
+    		for(Adiacenza a:adiacenti)
+    		{
+    			txtResult.appendText("\n" + a.getD2().getId() + " - # attori condivisi: " + a.getPeso());
+    		}
+    	}
 
     }
 
@@ -76,6 +99,12 @@ public class FXMLController {
    public void setModel(Model model) {
     	
     	this.model = model;
+    	
+    	this.btnAdiacenti.setDisable(true);
+    	for(int i=2004;i<=2006;i++)
+    	{
+    		this.boxAnno.getItems().add(i);
+    	}
     	
     }
     
